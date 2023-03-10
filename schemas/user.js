@@ -12,7 +12,6 @@ const userSchema = new mongoose.Schema(
     },
     bookmark: {
       type: Array,
-      required: false,
     },
   },
   { versionKey: false }
