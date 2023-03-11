@@ -9,6 +9,7 @@ const connect = require('./schemas');
 
 const marketRouter = require('./routes/bookmark');
 const userRouter = require('./routes/user');
+const historyRouter = require('./routes/history');
 
 const port = 3001;
 
@@ -28,3 +29,4 @@ app.listen(port, () => {
 
 app.use('/api', [marketRouter]);
 app.use('/api', [userRouter]);
+app.use('/api', [historyRouter]);
