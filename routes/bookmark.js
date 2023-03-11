@@ -1,16 +1,18 @@
 const express = require('express');
 const { StatusCodes } = require('http-status-codes');
-const Market = require('../schemas/bookmark');
 const User = require('../schemas/user');
 const auth = require('./auth');
 
 const router = express.Router();
 
 router.get('/bookmark', auth, async (req, res) => {
-  const id = req.user.id;
-  const bookmark = await User.findOne({ id: id }).select('bookmark');
-
-  console.log(bookmark);
+  try {
+    const id = req.user.id;
+    const bookmark = await User.findOne({ id: id }).select('bookmark');
+    res.status(StatusCodes.OK).json({ result: bookmark });
+  } catch (error) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ messege: '북마크 조회 실패' });
+  }
 
   // Market.find;
 });
