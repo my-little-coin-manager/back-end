@@ -13,7 +13,6 @@ router.get('/user', async (req, res) => {
 
   try {
     const userCheck = await userModels.getUser(id);
-    console.log(userCheck);
 
     if (!userCheck) {
       return res.status(StatusCodes.NOT_FOUND).json({ errors: { msg: '아이디가 다릅니다.' } });
@@ -60,7 +59,7 @@ router.post('/user', async (req, res) => {
       pw: password,
     };
 
-    const userInfo = await User.create(user);
+    await User.create(user);
 
     res.status(StatusCodes.CREATED).json({ success: { msg: '회원가입 성공' } });
   } catch (error) {

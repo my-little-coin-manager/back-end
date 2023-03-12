@@ -13,8 +13,6 @@ router.get('/bookmark', auth, async (req, res) => {
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ messege: '북마크 조회 실패' });
   }
-
-  // Market.find;
 });
 
 router.put('/bookmark', auth, async (req, res) => {

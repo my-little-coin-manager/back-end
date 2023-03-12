@@ -18,7 +18,7 @@ router.post('/history', auth, async (req, res) => {
   const { id } = req.user;
   const { history } = req.body;
 
-  const postHistoryData = HistoryModels.postHistory(id, history);
+  const postHistoryData = await HistoryModels.postHistory(id, history);
 
   res.status(StatusCodes.OK).json({ reult: postHistoryData });
 });
@@ -28,9 +28,8 @@ router.delete('/history', auth, async (req, res) => {
   const { id } = req.user;
 
   const deleteHistoryData = await HistoryModels.deleteHistory(_id, id);
-  const userHistory = await HistoryModels.getHistory(id);
 
-  res.status(StatusCodes.OK).json({ reult: userHistory });
+  res.status(StatusCodes.OK).json({ reult: deleteHistoryData });
 });
 
 module.exports = router;

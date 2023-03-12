@@ -11,7 +11,7 @@ exports.postHistory = async (id, history) => {
 };
 
 exports.deleteHistory = async (_id, id) => {
-  const deleteHistory = await History.deleteOne({ _id });
+  await History.deleteOne({ _id });
   const getHistory = await History.find({ id }).select('-id');
   return getHistory;
 };
