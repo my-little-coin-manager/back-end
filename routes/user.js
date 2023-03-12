@@ -4,36 +4,16 @@ const jwt = require('jsonwebtoken');
 const User = require('../schemas/user');
 const auth = require('./auth');
 const bcrypt = require('bcryptjs');
+const userModels = require('../models/user');
 
 const router = express.Router();
 
-router.post('/user', async (req, res) => {
-  const { id, pw } = req.body;
-  try {
-    const findId = await User.findOne({ id });
-    if (findId) {
-      return res.status(StatusCodes.BAD_REQUEST).json({ errors: { msg: '이미 있는 아이디 입니다.' } });
-    }
-    const salt = await bcrypt.genSalt(10);
-    const password = await bcrypt.hash(pw, salt);
-
-    const user = {
-      id: id,
-      pw: password,
-    };
-
-    const userInfo = await User.create(user);
-    res.status(StatusCodes.CREATED).json({ success: { msg: '회원가입 성공' } });
-    // json web token 으로 변환할 데이터 정보
-  } catch (error) {
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: { msg: error.message } });
-  }
-});
-
 router.get('/user', async (req, res) => {
+  const { id, pw } = req.body;
+
   try {
-    const { id, pw } = req.body;
-    const userCheck = await User.findOne({ id });
+    const userCheck = await userModels.getUser(id);
+    console.log(userCheck);
 
     if (!userCheck) {
       return res.status(StatusCodes.NOT_FOUND).json({ errors: { msg: '아이디가 다릅니다.' } });
@@ -59,6 +39,32 @@ router.get('/user', async (req, res) => {
   } catch (error) {
     console.error(error.message);
     res.status(500).send('Server error');
+  }
+});
+
+router.post('/user', async (req, res) => {
+  const { id, pw } = req.body;
+
+  try {
+    const findId = await userModels.getUser(id);
+
+    if (findId) {
+      return res.status(StatusCodes.BAD_REQUEST).json({ errors: { msg: '이미 있는 아이디 입니다.' } });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const password = await bcrypt.hash(pw, salt);
+
+    const user = {
+      id: id,
+      pw: password,
+    };
+
+    const userInfo = await User.create(user);
+
+    res.status(StatusCodes.CREATED).json({ success: { msg: '회원가입 성공' } });
+  } catch (error) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: { msg: error.message } });
   }
 });
 

@@ -2,33 +2,34 @@ const express = require('express');
 const { StatusCodes } = require('http-status-codes');
 const History = require('../schemas/history');
 const auth = require('./auth');
+const HistoryModels = require('../models/history');
 
 const router = express.Router();
 
 router.get('/history', auth, async (req, res) => {
   const { id } = req.user;
-  const findHistory = await History.find({ id: id }).select('-id');
-  res.status(StatusCodes.OK).json({ result: findHistory });
-  // console.log(portfolioList);
+
+  const userHistory = await HistoryModels.getHistory(id);
+
+  res.status(StatusCodes.OK).json({ result: userHistory });
 });
 
 router.post('/history', auth, async (req, res) => {
   const { id } = req.user;
-  console.log(req.body);
-  console.log(id);
   const { history } = req.body;
 
-  const log = await History.create({ id: id, history: history });
-  res.status(StatusCodes.OK).json({ reult: log });
+  const postHistoryData = HistoryModels.postHistory(id, history);
+
+  res.status(StatusCodes.OK).json({ reult: postHistoryData });
 });
 
 router.delete('/history', auth, async (req, res) => {
   const { _id } = req.body;
   const { id } = req.user;
 
-  const log = await History.deleteOne({ _id: _id });
-  const userHistory = await History.find({ id: id }).select('-id');
-  console.log(userHistory);
+  const deleteHistoryData = await HistoryModels.deleteHistory(_id, id);
+  const userHistory = await HistoryModels.getHistory(id);
+
   res.status(StatusCodes.OK).json({ reult: userHistory });
 });
 
