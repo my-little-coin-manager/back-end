@@ -2,7 +2,6 @@ const express = require('express');
 const { StatusCodes } = require('http-status-codes');
 const jwt = require('jsonwebtoken');
 const User = require('../schemas/user');
-const auth = require('./auth');
 const bcrypt = require('bcryptjs');
 const userModels = require('../models/user');
 
@@ -12,7 +11,7 @@ router.get('/user', async (req, res) => {
   const { id, pw } = req.body;
 
   try {
-    const userCheck = await userModels.getUser(id);
+    const userCheck = await userModels.getUserInfo(id);
 
     if (!userCheck) {
       return res.status(StatusCodes.NOT_FOUND).json({ errors: { msg: '아이디가 다릅니다.' } });
@@ -26,15 +25,16 @@ router.get('/user', async (req, res) => {
       },
     };
 
-    jwt.sign(
-      payload, // token으로 변환할 데이터
-      process.env.JWT_SECRET_KEY, // secret key 값
-      { expiresIn: '24h' }, // token의 유효시간을 24시간으로 설정
-      (error, token) => {
-        if (error) throw error;
-        res.json({ token });
-      }
-    );
+    const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '1d' }, (err, token) => {
+      if (err) throw err;
+
+      res.json({ token });
+
+      // res
+      //   .cookie('user', token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 })
+      //   .status(StatusCodes.OK)
+      //   .json({ msg: '로그인 성공' });
+    });
   } catch (error) {
     console.error(error.message);
     res.status(500).send('Server error');
@@ -45,7 +45,7 @@ router.post('/user', async (req, res) => {
   const { id, pw } = req.body;
 
   try {
-    const findId = await userModels.getUser(id);
+    const findId = await userModels.getUserInfo(id);
 
     if (findId) {
       return res.status(StatusCodes.BAD_REQUEST).json({ errors: { msg: '이미 있는 아이디 입니다.' } });
@@ -68,3 +68,5 @@ router.post('/user', async (req, res) => {
 });
 
 module.exports = router;
+
+// 아아아아아

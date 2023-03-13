@@ -4,8 +4,9 @@ const express = require('express');
 const app = express();
 
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 
-const connect = require('./schemas');
+const connectDB = require('./schemas');
 
 const marketRouter = require('./routes/bookmark');
 const userRouter = require('./routes/user');
@@ -19,14 +20,13 @@ let corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+app.use('/', [marketRouter, userRouter, historyRouter]);
 
 app.listen(port, () => {
-  connect(process.env.MONGO_DB);
+  connectDB(process.env.MONGO_DB);
   console.log('서버실행');
 });
-
-app.use('/api', [marketRouter]);
-app.use('/api', [userRouter]);
-app.use('/api', [historyRouter]);
