@@ -12,7 +12,7 @@ const marketRouter = require('./routes/bookmark');
 const userRouter = require('./routes/user');
 const historyRouter = require('./routes/history');
 
-const port = 3001;
+const port = 8080;
 
 let corsOptions = {
   origin: '*', // 출처 허용 옵션

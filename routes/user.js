@@ -8,7 +8,7 @@ const userModels = require('../models/user');
 const router = express.Router();
 
 router.get('/user', async (req, res) => {
-  const { id, pw } = req.body;
+  const { id, pw } = req.query;
 
   try {
     const userCheck = await userModels.getUserInfo(id);
@@ -25,7 +25,7 @@ router.get('/user', async (req, res) => {
       },
     };
 
-    const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '1d' }, (err, token) => {
+    jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '1d' }, (err, token) => {
       if (err) throw err;
 
       res.json({ token });
