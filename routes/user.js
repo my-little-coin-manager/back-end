@@ -7,8 +7,8 @@ const userModels = require('../models/user');
 
 const router = express.Router();
 
-router.get('/user', async (req, res) => {
-  const { id, pw } = req.query;
+router.post('/loign', async (req, res) => {
+  const { id, pw } = req.body;
 
   try {
     const userCheck = await userModels.getUserInfo(id);
@@ -68,5 +68,3 @@ router.post('/user', async (req, res) => {
 });
 
 module.exports = router;
-
-// 아아아아아
