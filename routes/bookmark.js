@@ -32,13 +32,13 @@ router.put('/bookmark', auth, async (req, res) => {
   }
 });
 
-router.delete('/bookmark', auth, async (req, res) => {
+router.delete('/bookmark/:coin', auth, async (req, res) => {
   try {
-    const { bookmark } = req.body;
+    const { coin } = req.params;
     const id = req.user.id;
 
     const userInfo = await userModels.getUserId(id);
-    const fiteredBookmark = await userInfo.bookmark.filter((data) => data !== bookmark);
+    const fiteredBookmark = await userInfo.bookmark.filter((data) => data !== coin);
     const deleteBookmark = await bookmarkModels.deleteBookmark(userInfo.id, fiteredBookmark);
 
     res.status(StatusCodes.OK).json({ result: deleteBookmark.bookmark });
