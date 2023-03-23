@@ -9,7 +9,6 @@ const router = express.Router();
 
 router.post('/login', async (req, res) => {
   const { id, pw } = req.body;
-  console.log(id, pw);
 
   try {
     const userCheck = await userModels.getUserInfo(id);
@@ -29,7 +28,7 @@ router.post('/login', async (req, res) => {
     jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '1d' }, (err, token) => {
       if (err) throw err;
 
-      res.json({ token, msg: '로그인 성공' });
+      res.json({ token, nickname: userCheck.nickname });
 
       // res
       //   .cookie('user', token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 })
@@ -43,13 +42,13 @@ router.post('/login', async (req, res) => {
 });
 
 router.post('/user', async (req, res) => {
-  const { id, pw } = req.body;
+  const { id, pw, nickname } = req.body;
 
   try {
     const findId = await userModels.getUserInfo(id);
 
     if (findId) {
-      return res.status(StatusCodes.BAD_REQUEST).json({ msg: '이미 있는 아이디 입니다.' });
+      return res.status(StatusCodes.BAD_REQUEST).json({ msg: '이미 있는 아이디입니다.' });
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -58,6 +57,7 @@ router.post('/user', async (req, res) => {
     const user = {
       id: id,
       pw: password,
+      nickname: nickname,
     };
 
     await User.create(user);
