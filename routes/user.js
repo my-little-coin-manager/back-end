@@ -25,16 +25,15 @@ router.post('/login', async (req, res) => {
       },
     };
 
-    jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '1d' }, (err, token) => {
-      if (err) throw err;
+    const accessToken = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '3h' });
+    const refreshToken = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '5h' });
 
-      res.json({ token, nickname: userCheck.nickname });
+    const a = await userModels.updateUser(id, refreshToken);
+    console.log(a);
 
-      // res
-      //   .cookie('user', token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 })
-      //   .status(StatusCodes.OK)
-      //   .json({ msg: '로그인 성공' });
-    });
+    console.log(refreshToken);
+
+    res.json({ accessToken, refreshToken, nickname: userCheck.nickname });
   } catch (error) {
     console.error(error.message);
     res.status(500).send('Server error');
@@ -58,6 +57,7 @@ router.post('/user', async (req, res) => {
       id: id,
       pw: password,
       nickname: nickname,
+      refreshToken: '',
     };
 
     await User.create(user);
