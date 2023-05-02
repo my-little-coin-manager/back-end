@@ -14,3 +14,8 @@ exports.updateUser = async (id, refreshToken) => {
   const saveToken = await User.findOneAndUpdate({ id }, { $set: { refreshToken } }, { new: true }).select(id);
   return saveToken;
 };
+
+exports.getRefreshToken = async (refreshToken) => {
+  const findToken = await User.findOne({ refreshToken });
+  return findToken;
+};

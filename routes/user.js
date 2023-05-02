@@ -10,33 +10,35 @@ const router = express.Router();
 router.post('/login', async (req, res) => {
   const { id, pw } = req.body;
 
+  console.log(id);
+
   try {
     const userCheck = await userModels.getUserInfo(id);
 
     if (!userCheck) {
-      return res.status(StatusCodes.NOT_FOUND).json({ msg: '아이디가 다릅니다.' });
+      return res.status(StatusCodes.NOT_FOUND).json({ msg: '존재하지 않는 아이디입니다.' });
     } else if (!bcrypt.compareSync(pw, userCheck.pw)) {
-      return res.status(StatusCodes.NOT_FOUND).json({ msg: '비밀번호가 다릅니다.' });
+      return res.status(StatusCodes.NOT_FOUND).json({ msg: '잘못된 비밀번호입니다.' });
     }
 
     const payload = {
       user: {
         id: userCheck.id,
+        nickname: userCheck.nickname,
       },
     };
 
-    const accessToken = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '3h' });
-    const refreshToken = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '5h' });
+    const accessToken = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '1m', issuer: 'MLCM' });
+    const refreshToken = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '24h', issuer: 'MLCM' });
 
-    const a = await userModels.updateUser(id, refreshToken);
-    console.log(a);
+    userModels.updateUser(id, refreshToken);
 
-    console.log(refreshToken);
+    res.cookie('refreshToken', refreshToken, { httpOnly: true });
 
-    res.json({ accessToken, refreshToken, nickname: userCheck.nickname });
+    res.status(StatusCodes.OK).json({ accessToken, nickname: userCheck.nickname });
   } catch (error) {
     console.error(error.message);
-    res.status(500).send('Server error');
+    res.status(StatusCodes.BAD_REQUEST).send('Login error');
   }
 });
 

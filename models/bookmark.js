@@ -2,7 +2,7 @@ const User = require('../schemas/user');
 
 exports.futBookmark = async (userId, addBookmark) => {
   const futBookmark = await User.findOneAndUpdate({ id: userId }, { $set: { bookmark: addBookmark } }, { new: true }).select('bookmark');
-  console.log(futBookmark);
+
   return futBookmark;
 };
 

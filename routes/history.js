@@ -33,21 +33,3 @@ router.delete('/history', auth, async (req, res) => {
 });
 
 module.exports = router;
-
-// if (existedTodo) {
-//   isPortfolio.portfolio['비트코인 index'].buy.push({ data, 수량, 매수가 });
-//   result = await existedTodo.save();
-// }
-
-// {
-//   "history": {
-//     "transaction": "buy",
-//     "market": "BTC",
-//     "price": 2000,
-//     "qty": 10
-//   }
-// }
-
-// {
-// "_id": "640ca788e25e09728f70a357"
-// }

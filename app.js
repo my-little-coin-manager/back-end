@@ -15,13 +15,13 @@ const historyRouter = require('./routes/history');
 const port = 8080;
 
 let corsOptions = {
-  origin: ['http://localhost:3000'], // 출처 허용 옵션
-  credential: true, // 사용자 인증이 필요한 리소스(쿠키 등) 접근
+  origin: 'http://localhost:3000', // 출처 허용 옵션
+  credentials: true, // 사용자 인증이 필요한 리소스(쿠키 등) 접근
 };
 
 app.use(cors(corsOptions));
-app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(cookieParser());
 
 app.use('/', [marketRouter, userRouter, historyRouter]);
