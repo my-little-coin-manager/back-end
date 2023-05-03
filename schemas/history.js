@@ -18,8 +18,9 @@ const historySchema = new mongoose.Schema(
     },
     history: {
       market: String,
+      koreanName: String,
       transaction: String,
-      date: { type: Date, default: Date.now },
+      date: String,
       price: Number,
       qty: Number,
     },

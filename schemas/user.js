@@ -10,8 +10,15 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    nickname: {
+      type: String,
+      required: true,
+    },
     bookmark: {
       type: Array,
+    },
+    refreshToken: {
+      type: String,
     },
   },
   { versionKey: false }

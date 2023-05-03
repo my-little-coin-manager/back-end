@@ -1,22 +1,37 @@
 const jwt = require('jsonwebtoken');
+const userModels = require('../models/user');
+const { StatusCodes } = require('http-status-codes');
 
-module.exports = function (req, res, next) {
+module.exports = async function (req, res, next) {
   // Get token from header
-  const token = req.headers.authorization.split('Bearer ')[1];
 
-  // Check if not token
-  if (!token) {
+  const refreshToken = req.cookies.refreshToken;
+  const accessToken = req.headers.authorization.split('Bearer ')[1];
+
+  // token check
+  if (!accessToken || !refreshToken) {
     return res.status(401).json({ msg: 'No token, authorization denied' });
   }
 
-  // Verify token
   try {
-    // token 해독, token을 만들 때 설정한 secret key 값 : jwtSecret
-    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-    // req에 해독한 user 정보 생성
-    req.user = decoded.user;
+    const refreshTokenVerify = jwt.verify(refreshToken, process.env.JWT_SECRET_KEY);
+    const accessTokenVerify = jwt.verify(accessToken, process.env.JWT_SECRET_KEY);
+    req.user = accessTokenVerify.user;
     next();
   } catch (error) {
-    res.status(401).json({ msg: 'Token is not valid' });
+    if (jwt.verify(refreshToken, process.env.JWT_SECRET_KEY)) {
+      const userCheck = await userModels.getRefreshToken(refreshToken);
+
+      const payload = {
+        user: {
+          id: userCheck.id,
+          nickname: userCheck.nickname,
+        },
+      };
+      const newAccessToken = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '1m', issuer: 'MLCM' });
+      return res.status(StatusCodes.OK).json({ newAccessToken, nickname: userCheck.nickname });
+    } else {
+      return res.status(401).json({ msg: 'No token, authorization denied' });
+    }
   }
 };
