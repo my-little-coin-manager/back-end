@@ -28,7 +28,7 @@ router.post('/login', async (req, res) => {
       },
     };
 
-    const accessToken = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '1m', issuer: 'MLCM' });
+    const accessToken = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '30m', issuer: 'MLCM' });
     const refreshToken = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '24h', issuer: 'MLCM' });
 
     userModels.updateUser(id, refreshToken);

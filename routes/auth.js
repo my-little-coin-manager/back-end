@@ -28,10 +28,10 @@ module.exports = async function (req, res, next) {
           nickname: userCheck.nickname,
         },
       };
-      const newAccessToken = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '1m', issuer: 'MLCM' });
+      const newAccessToken = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '30m', issuer: 'MLCM' });
       return res.status(StatusCodes.OK).json({ newAccessToken, nickname: userCheck.nickname });
     } else {
-      return res.status(401).json({ msg: 'No token, authorization denied' });
+      return res.status(401).json({ msg: '로그인 만료' });
     }
   }
 };
