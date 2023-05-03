@@ -15,7 +15,7 @@ const historyRouter = require('./routes/history');
 const port = 8080;
 
 let corsOptions = {
-  origin: 'http://localhost:3000', // 출처 허용 옵션
+  origin: ['https://front-end-git-dev-mlcm.vercel.app', 'http://localhost:3000'], // 출처 허용 옵션
   credentials: true, // 사용자 인증이 필요한 리소스(쿠키 등) 접근
 };
 

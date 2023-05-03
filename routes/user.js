@@ -10,8 +10,6 @@ const router = express.Router();
 router.post('/login', async (req, res) => {
   const { id, pw } = req.body;
 
-  console.log(id);
-
   try {
     const userCheck = await userModels.getUserInfo(id);
 
@@ -28,8 +26,8 @@ router.post('/login', async (req, res) => {
       },
     };
 
-    const accessToken = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '30m', issuer: 'MLCM' });
-    const refreshToken = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '24h', issuer: 'MLCM' });
+    const accessToken = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '1m', issuer: 'MLCM' });
+    const refreshToken = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '1m', issuer: 'MLCM' });
 
     userModels.updateUser(id, refreshToken);
 
