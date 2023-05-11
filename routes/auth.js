@@ -7,6 +7,8 @@ module.exports = async function (req, res, next) {
 
   const refreshToken = req.cookies.refreshToken;
   const accessToken = req.headers.authorization.split('Bearer ')[1];
+  let refreshTokenVerify = null;
+  let accessTokenVerify = null;
 
   // token check
   if (!accessToken || !refreshToken) {
@@ -14,24 +16,27 @@ module.exports = async function (req, res, next) {
   }
 
   try {
-    const refreshTokenVerify = jwt.verify(refreshToken, process.env.JWT_SECRET_KEY);
-    const accessTokenVerify = jwt.verify(accessToken, process.env.JWT_SECRET_KEY);
+    accessTokenVerify = jwt.verify(accessToken, process.env.JWT_SECRET_KEY);
     req.user = accessTokenVerify.user;
-    next();
+    return next();
   } catch (error) {
-    if (jwt.verify(refreshToken, process.env.JWT_SECRET_KEY)) {
-      const userCheck = await userModels.getRefreshToken(refreshToken);
+    accessTokenVerify = null;
+  }
 
-      const payload = {
-        user: {
-          id: userCheck.id,
-          nickname: userCheck.nickname,
-        },
-      };
-      const newAccessToken = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '1m', issuer: 'MLCM' });
-      return res.status(StatusCodes.OK).json({ newAccessToken, nickname: userCheck.nickname });
-    } else {
-      return res.status(401).json({ msg: 'No token, authorization denied' });
-    }
+  try {
+    refreshTokenVerify = jwt.verify(refreshToken, process.env.JWT_SECRET_KEY);
+    const userCheck = await userModels.getRefreshToken(refreshToken);
+
+    const payload = {
+      user: {
+        id: userCheck.id,
+        nickname: userCheck.nickname,
+      },
+    };
+
+    const newAccessToken = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '30m', issuer: 'MLCM' });
+    return res.status(StatusCodes.OK).json({ newAccessToken, nickname: userCheck.nickname });
+  } catch (error) {
+    return res.status(401).json({ msg: '로그인 만료' });
   }
 };
