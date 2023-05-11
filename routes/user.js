@@ -26,18 +26,21 @@ router.post('/login', async (req, res) => {
       },
     };
 
-    const accessToken = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '1m', issuer: 'MLCM' });
-    const refreshToken = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '1m', issuer: 'MLCM' });
+    const accessToken = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '30m', issuer: 'MLCM' });
+    const refreshToken = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '24h', issuer: 'MLCM' });
 
     userModels.updateUser(id, refreshToken);
 
-    res.cookie('refreshToken', refreshToken, { httpOnly: true });
-
+    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'none' });
     res.status(StatusCodes.OK).json({ accessToken, nickname: userCheck.nickname });
   } catch (error) {
     console.error(error.message);
     res.status(StatusCodes.BAD_REQUEST).send('Login error');
   }
+});
+
+router.post('/logout', async (req, res) => {
+  return res.clearCookie('refreshToken').end();
 });
 
 router.post('/user', async (req, res) => {
