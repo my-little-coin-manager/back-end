@@ -11,11 +11,15 @@ exports.getUserId = async (id) => {
 };
 
 exports.updateUser = async (id, refreshToken) => {
-  const saveToken = await User.findOneAndUpdate({ id }, { $set: { refreshToken } }, { new: true }).select(id);
+  const saveToken = await User.findOneAndUpdate({ id }, { $set: { refreshToken, isLogin: true } }, { new: true }).select(id);
   return saveToken;
 };
 
 exports.getRefreshToken = async (refreshToken) => {
   const findToken = await User.findOne({ refreshToken });
   return findToken;
+};
+
+exports.deleteRefreshToken = async (refreshToken) => {
+  const deleteToken = await User.findOneAndUpdate({ refreshToken }, { $set: { refreshToken: '', isLogin: false } });
 };

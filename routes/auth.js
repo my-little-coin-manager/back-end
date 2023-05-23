@@ -24,9 +24,8 @@ module.exports = async function (req, res, next) {
   }
 
   try {
-    refreshTokenVerify = jwt.verify(refreshToken, process.env.JWT_SECRET_KEY);
     const userCheck = await userModels.getRefreshToken(refreshToken);
-
+    refreshTokenVerify = jwt.verify(refreshToken, process.env.JWT_SECRET_KEY);
     const payload = {
       user: {
         id: userCheck.id,
@@ -37,6 +36,11 @@ module.exports = async function (req, res, next) {
     const newAccessToken = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '30m', issuer: 'MLCM' });
     return res.status(StatusCodes.OK).json({ newAccessToken, nickname: userCheck.nickname });
   } catch (error) {
-    return res.status(401).json({ msg: '로그인 만료' });
+    const userCheck = await userModels.getRefreshToken(refreshToken);
+    if (!userCheck) return;
+    if (userCheck.isLogin) {
+      userModels.deleteRefreshToken(refreshToken);
+      return res.status(401).json({ msg: '로그인 만료' });
+    }
   }
 };

@@ -20,6 +20,9 @@ const userSchema = new mongoose.Schema(
     refreshToken: {
       type: String,
     },
+    isLogin: {
+      type: Boolean,
+    },
   },
   { versionKey: false }
 );
