@@ -40,7 +40,7 @@ router.post('/login', async (req, res) => {
 });
 
 router.post('/logout', async (req, res) => {
-  return res.clearCookie('refreshToken').end();
+  return res.clearCookie('refreshToken').send('로그아웃 완료');
 });
 
 router.post('/user', async (req, res) => {
