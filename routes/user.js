@@ -14,9 +14,9 @@ router.post('/login', async (req, res) => {
     const userCheck = await userModels.getUserInfo(id);
 
     if (!userCheck) {
-      return res.status(StatusCodes.NOT_FOUND).json({ msg: '존재하지 않는 아이디입니다.' });
+      return res.status(StatusCodes.BAD_REQUEST).json({ msg: '존재하지 않는 아이디입니다.' });
     } else if (!bcrypt.compareSync(pw, userCheck.pw)) {
-      return res.status(StatusCodes.NOT_FOUND).json({ msg: '잘못된 비밀번호입니다.' });
+      return res.status(StatusCodes.BAD_REQUEST).json({ msg: '잘못된 비밀번호입니다.' });
     }
 
     const payload = {
@@ -42,7 +42,12 @@ router.post('/login', async (req, res) => {
 router.post('/logout', async (req, res) => {
   const refreshToken = req.cookies.refreshToken;
   userModels.deleteRefreshToken(refreshToken);
-  return res.clearCookie('refreshToken').json({ msg: '로그아웃 완료' });
+  res.clearCookie('refreshToken', {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'none',
+  });
+  res.end();
 });
 
 router.post('/user', async (req, res) => {

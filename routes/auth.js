@@ -24,8 +24,8 @@ module.exports = async function (req, res, next) {
   }
 
   try {
-    const userCheck = await userModels.getRefreshToken(refreshToken);
     refreshTokenVerify = jwt.verify(refreshToken, process.env.JWT_SECRET_KEY);
+    const userCheck = await userModels.getRefreshToken(refreshToken);
     const payload = {
       user: {
         id: userCheck.id,
